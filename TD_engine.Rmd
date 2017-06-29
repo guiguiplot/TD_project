@@ -119,3 +119,62 @@ articles1 <- do.call(rbind, articles)
 articles1
 ```
 
+```
+#Mein Ziel ist hier die Anzahl der Publikationen auf dem Economic Voting für jeden Jahr zu scrappen
+
+library(stringr)
+library(rvest)
+library(dplyr)
+library(httr)
+
+#Um nicht als Bot annerkannt zu werden eine wichtige Etape ist der useragent zu ändern
+
+#Neu Option Anstellung
+#options("HTTPUserAgent"="Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.2117.157 Safari/537.36")
+#Kontrollieren das Useragent richtig geändert wurde
+#getOption("HTTPUserAgent")
+
+
+#Links - generieren
+
+#Anfangsdatum für jede suche
+start_time <- 1950:2017
+#Enddatum für jede suche (ich möchte jedes mal 1950:1950 ; 1951:1951 usw...)
+end_time <- 1950:2017
+
+#Linke Generieren
+links_page <- paste('https://scholar.google.ca/scholar?q="economic+voting"&hl=fr&num=20&as_sdt=0&as_ylo=', start_time, '&as_yhi=', end_time, sep='')
+
+url <- links_page[1]
+
+#Function erstellen um einfach die Anzahl der Ergebnisse zu scrappen
+str_scrape_number <- function(url){
+
+  number_page <- read_html(url)
+  
+  number <- number_page %>%
+    html_nodes("#gs_ab_md") %>%
+    html_text() %>%
+    str_extract("\\d\\d\\s\\d\\d\\d|\\d\\s\\d\\d\\d|\\d\\d\\d|\\d\\d|\\d|\\d\\h")
+  
+ 
+  
+    return(number)
+}
+
+
+#Function um jede Seite zu scrappen
+numbers <- c()
+sleep_time <- seq(0,1, .01)
+
+for(jj in 1:length(links_page)){
+  numbers[jj] <- str_scrape_number(links_page[1])
+  
+  #Interval zwischen jeder Query
+  Sys.sleep(sample(sleep_times,1))
+  
+  }
+
+numbers
+
+```
